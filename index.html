@@ -317,7 +317,7 @@
 
     /* ── MOBILE ── */
     @media (max-width: 500px) {
-      .td-circuit, .th-circuit { display: none; }
+      /*.td-circuit, .th-circuit, .td-date, .th-date { display: none; }*/
       .search-input { width: 120px; }
     }
   </style>
@@ -393,6 +393,7 @@
           <th onclick="sortTable('car')">Car <span class="sort-arrow" id="arrow-car">↕</span></th>
           <th class="th-circuit" onclick="sortTable('circuit')">Circuit <span class="sort-arrow" id="arrow-circuit">↕</span></th>
           <th onclick="sortTable('laptime')">Laptime <span class="sort-arrow" id="arrow-laptime">↕</span></th>
+          <th class="th-date" onclick="sortTable('date')">Date <span class="sort-arrow" id="arrow-date">↕</span></th>
         </tr>
       </thead>
       <tbody id="video-table-body"></tbody>
@@ -476,7 +477,7 @@
     function renderTable(data) {
       const tbody = document.getElementById('video-table-body');
       if (data.length === 0) {
-        tbody.innerHTML = '<tr class="empty-row"><td colspan="4">No videos match your filters.</td></tr>';
+        tbody.innerHTML = '<tr class="empty-row"><td colspan="5">No videos match your filters.</td></tr>';
         return;
       }
       tbody.innerHTML = data.map(v => {
@@ -490,7 +491,9 @@
           '<td>' + (v.laptime
             ? '<span class="laptime' + (isFastest ? ' fastest' : '') + '">' + v.laptime + (isFastest ? ' 🏆' : '') + '</span>'
             : '<span style="color:#bbb;font-size:12px;">—</span>') +
-          '</td></tr>';
+          '</td>' +
+          '<td class="td-date" style="color:var(--mid);font-size:12px;">' + (v.date || '—') + '</td>' +
+          '</tr>';
       }).join('');
     }
 
@@ -525,7 +528,7 @@
     }
 
     function sortTable(key) {
-      ['title','car','circuit','laptime'].forEach(function(k) {
+      ['title','car','circuit','laptime','date'].forEach(function(k) {
         var el = document.getElementById('arrow-' + k);
         if (el) { el.textContent = '↕'; el.closest('th').classList.remove('sorted'); }
       });
