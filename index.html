@@ -1,0 +1,642 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Your Name — Car Drives & Lifestyle</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Syne:wght@700;800&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --white: #ffffff;
+      --off-white: #f8f8f6;
+      --ink: #111111;
+      --mid: #666666;
+      --light: #e8e8e4;
+      --accent: #c0392b;
+      --accent-soft: #fdf2f1;
+      --radius: 10px;
+      --font-display: 'Syne', sans-serif;
+      --font-body: 'Inter', sans-serif;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: var(--font-body);
+      background: var(--off-white);
+      color: var(--ink);
+      min-height: 100vh;
+      padding: 0 16px 64px;
+    }
+
+    /* ── HEADER ── */
+    .header {
+      max-width: 640px;
+      margin: 0 auto;
+      padding: 52px 0 40px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      gap: 16px;
+    }
+
+    .avatar-wrap {
+      width: 88px;
+      height: 88px;
+      border-radius: 50%;
+      background: var(--light);
+      overflow: hidden;
+      border: 3px solid var(--white);
+      box-shadow: 0 2px 16px rgba(0,0,0,0.08);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .avatar-placeholder {
+      font-size: 36px;
+      line-height: 1;
+    }
+
+    .header-name {
+      font-family: var(--font-display);
+      font-size: 28px;
+      font-weight: 800;
+      letter-spacing: -0.5px;
+      color: var(--ink);
+      line-height: 1.1;
+    }
+
+    .header-tag {
+      display: inline-block;
+      background: var(--accent);
+      color: #fff;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      padding: 3px 10px;
+      border-radius: 99px;
+      margin-top: -4px;
+    }
+
+    .header-bio {
+      font-size: 14px;
+      color: var(--mid);
+      line-height: 1.6;
+      max-width: 340px;
+    }
+
+    /* ── SOCIAL LINKS ── */
+    .socials {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      justify-content: center;
+      margin-top: 4px;
+    }
+
+    .social-btn {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      padding: 9px 18px;
+      border-radius: 99px;
+      font-size: 13px;
+      font-weight: 500;
+      text-decoration: none;
+      border: 1.5px solid var(--light);
+      background: var(--white);
+      color: var(--ink);
+      transition: border-color 0.15s, background 0.15s, color 0.15s;
+    }
+
+    .social-btn:hover {
+      border-color: var(--accent);
+      background: var(--accent-soft);
+      color: var(--accent);
+    }
+
+    .social-btn svg { width: 16px; height: 16px; flex-shrink: 0; }
+
+    /* ── STATS ROW ── */
+    .stats {
+      max-width: 640px;
+      margin: 0 auto 40px;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+    }
+
+    .stat-card {
+      background: var(--white);
+      border: 1.5px solid var(--light);
+      border-radius: var(--radius);
+      padding: 18px 12px;
+      text-align: center;
+    }
+
+    .stat-number {
+      font-family: var(--font-display);
+      font-size: 22px;
+      font-weight: 800;
+      color: var(--accent);
+    }
+
+    .stat-label {
+      font-size: 11px;
+      color: var(--mid);
+      font-weight: 500;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      margin-top: 4px;
+    }
+
+    /* ── DIVIDER ── */
+    .section-label {
+      max-width: 640px;
+      margin: 0 auto 16px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .section-label span {
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--mid);
+      white-space: nowrap;
+    }
+
+    .section-label::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: var(--light);
+    }
+
+    /* ── FILTERS ── */
+    .filters {
+      max-width: 640px;
+      margin: 0 auto 16px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .filter-group {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .filter-label {
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--mid);
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+    }
+
+    .filter-select {
+      font-family: var(--font-body);
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--ink);
+      background: var(--white);
+      border: 1.5px solid var(--light);
+      border-radius: 99px;
+      padding: 6px 14px 6px 12px;
+      cursor: pointer;
+      outline: none;
+      appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' fill='none'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%23666' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 10px center;
+      padding-right: 28px;
+      transition: border-color 0.15s;
+    }
+
+    .filter-select:focus { border-color: var(--accent); }
+
+    .search-input {
+      font-family: var(--font-body);
+      font-size: 13px;
+      color: var(--ink);
+      background: var(--white);
+      border: 1.5px solid var(--light);
+      border-radius: 99px;
+      padding: 6px 14px;
+      outline: none;
+      width: 160px;
+      transition: border-color 0.15s;
+    }
+
+    .search-input::placeholder { color: #aaa; }
+    .search-input:focus { border-color: var(--accent); }
+
+    /* ── TABLE ── */
+    .table-wrap {
+      max-width: 640px;
+      margin: 0 auto;
+      background: var(--white);
+      border: 1.5px solid var(--light);
+      border-radius: var(--radius);
+      overflow: hidden;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+    }
+
+    thead {
+      background: var(--off-white);
+      border-bottom: 1.5px solid var(--light);
+    }
+
+    th {
+      padding: 12px 14px;
+      text-align: left;
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--mid);
+      letter-spacing: 0.07em;
+      text-transform: uppercase;
+      white-space: nowrap;
+      cursor: pointer;
+      user-select: none;
+      transition: color 0.15s;
+    }
+
+    th:hover { color: var(--ink); }
+
+    th .sort-arrow {
+      display: inline-block;
+      margin-left: 4px;
+      opacity: 0.3;
+      font-size: 10px;
+    }
+
+    th.sorted .sort-arrow { opacity: 1; color: var(--accent); }
+
+    td {
+      padding: 13px 14px;
+      border-bottom: 1px solid var(--light);
+      vertical-align: middle;
+      color: var(--ink);
+    }
+
+    tr:last-child td { border-bottom: none; }
+
+    tr:hover td { background: var(--off-white); }
+
+    .td-title a {
+      color: var(--ink);
+      text-decoration: none;
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .td-title a:hover { color: var(--accent); }
+
+    .play-icon {
+      width: 22px;
+      height: 22px;
+      background: var(--accent);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      transition: background 0.15s;
+    }
+
+    .td-title a:hover .play-icon { background: #a93226; }
+
+    .play-icon svg { width: 8px; height: 8px; margin-left: 1px; }
+
+    .badge {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 99px;
+      font-size: 11px;
+      font-weight: 600;
+      background: var(--off-white);
+      color: var(--mid);
+      border: 1px solid var(--light);
+    }
+
+    .badge.bmw { background: #eef2ff; color: #3730a3; border-color: #c7d2fe; }
+    .badge.toyota { background: #fff7ed; color: #c2410c; border-color: #fed7aa; }
+    .badge.honda { background: #f0fdf4; color: #166534; border-color: #bbf7d0; }
+    .badge.nissan { background: #fdf4ff; color: #7e22ce; border-color: #e9d5ff; }
+    .badge.mercedes { background: #f0f9ff; color: #0369a1; border-color: #bae6fd; }
+
+    .laptime {
+      font-family: 'Courier New', monospace;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--ink);
+      letter-spacing: 0.03em;
+    }
+
+    .laptime.fastest { color: var(--accent); }
+
+    /* empty state */
+    .empty-row td {
+      text-align: center;
+      padding: 40px;
+      color: var(--mid);
+      font-size: 13px;
+    }
+
+    /* ── FOOTER ── */
+    .footer {
+      max-width: 640px;
+      margin: 40px auto 0;
+      text-align: center;
+      font-size: 12px;
+      color: var(--mid);
+    }
+
+    /* ── MOBILE ── */
+    @media (max-width: 500px) {
+      .stats { grid-template-columns: repeat(3, 1fr); gap: 8px; }
+      .stat-card { padding: 14px 8px; }
+      .stat-number { font-size: 18px; }
+      .td-circuit, .th-circuit { display: none; }
+      .search-input { width: 120px; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- HEADER -->
+  <div class="header">
+    <div class="avatar-wrap">
+      <span class="avatar-placeholder">🏎️</span>
+    </div>
+    <div>
+      <div class="header-name">Your Name</div>
+      <span class="header-tag">🇮🇩 Indonesia</span>
+    </div>
+    <p class="header-bio">Car drives & lifestyle. BMW lover chasing good roads and good sounds.</p>
+
+    <div class="socials">
+      <a href="https://instagram.com/yourhandle" class="social-btn" target="_blank">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/>
+        </svg>
+        Instagram
+      </a>
+      <a href="https://tiktok.com/@yourhandle" class="social-btn" target="_blank">
+        <svg viewBox="0 0 24 24" fill="currentColor">
+          <path d="M19.59 6.69a4.83 4.83 0 01-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 01-2.88 2.5 2.89 2.89 0 01-2.89-2.89 2.89 2.89 0 012.89-2.89c.28 0 .54.04.79.1V9.01a6.32 6.32 0 00-.79-.05 6.34 6.34 0 00-6.34 6.34 6.34 6.34 0 006.34 6.34 6.34 6.34 0 006.33-6.34V8.69a8.17 8.17 0 004.78 1.52V6.75a4.85 4.85 0 01-1.01-.06z"/>
+        </svg>
+        TikTok
+      </a>
+      <a href="https://youtube.com/@yourhandle" class="social-btn" target="_blank">
+        <svg viewBox="0 0 24 24" fill="currentColor">
+          <path d="M23 7s-.3-2-1.2-2.8c-1.1-1.2-2.4-1.2-3-1.3C16.6 2.8 12 2.8 12 2.8s-4.6 0-6.8.2c-.6.1-1.9.1-3 1.3C1.3 5 1 7 1 7S.7 9.2.7 11.5v2.1c0 2.3.3 4.5.3 4.5s.3 2 1.2 2.8c1.1 1.2 2.6 1.1 3.3 1.2C7.5 22.3 12 22.3 12 22.3s4.6 0 6.8-.3c.6-.1 1.9-.1 3-1.3.9-.8 1.2-2.8 1.2-2.8s.3-2.2.3-4.5v-2c0-2.3-.3-4.5-.3-4.5zM9.7 15.5V8.4l8.1 3.6-8.1 3.5z"/>
+        </svg>
+        YouTube
+      </a>
+    </div>
+  </div>
+
+  <!-- STATS -->
+  <div class="stats">
+    <div class="stat-card">
+      <div class="stat-number">38K</div>
+      <div class="stat-label">Views</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-number">895</div>
+      <div class="stat-label">Shares</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-number" id="video-count">—</div>
+      <div class="stat-label">Videos</div>
+    </div>
+  </div>
+
+  <!-- TABLE SECTION -->
+  <div class="section-label"><span>Video Archive</span></div>
+
+  <div class="filters">
+    <div class="filter-group">
+      <select class="filter-select" id="filter-car" onchange="applyFilters()">
+        <option value="">All Cars</option>
+        <option value="BMW">BMW</option>
+        <option value="Toyota">Toyota</option>
+        <option value="Honda">Honda</option>
+        <option value="Nissan">Nissan</option>
+        <option value="Mercedes">Mercedes</option>
+      </select>
+    </div>
+    <div class="filter-group">
+      <select class="filter-select" id="filter-circuit" onchange="applyFilters()">
+        <option value="">All Circuits</option>
+        <option value="Sentul">Sentul</option>
+        <option value="Brigif">Brigif</option>
+        <option value="Mandalika">Mandalika</option>
+        <option value="Street">Street</option>
+      </select>
+    </div>
+    <input class="search-input" type="text" id="search" placeholder="Search videos…" oninput="applyFilters()" />
+  </div>
+
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th onclick="sortTable('title')">Video <span class="sort-arrow" id="arrow-title">↕</span></th>
+          <th onclick="sortTable('car')">Car <span class="sort-arrow" id="arrow-car">↕</span></th>
+          <th class="th-circuit" onclick="sortTable('circuit')">Circuit <span class="sort-arrow" id="arrow-circuit">↕</span></th>
+          <th onclick="sortTable('laptime')">Laptime <span class="sort-arrow" id="arrow-laptime">↕</span></th>
+        </tr>
+      </thead>
+      <tbody id="video-table-body"></tbody>
+    </table>
+  </div>
+
+  <div class="footer">
+    Update your video list by editing the <code>videos</code> array in this file.
+  </div>
+
+  <script>
+    // ─────────────────────────────────────────
+    //  ADD YOUR VIDEOS HERE
+    //  laptime: "1:23.456" or "" if not a track video
+    // ─────────────────────────────────────────
+    const videos = [
+      {
+        title: "BMW E90 M3 — Sentul Circuit",
+        url: "https://www.instagram.com/reel/your-reel-id/",
+        car: "BMW",
+        circuit: "Sentul",
+        laptime: "1:52.300",
+        date: "2025-06-27"
+      },
+      {
+        title: "Daily drive vibes — E90 M3",
+        url: "https://www.instagram.com/reel/your-reel-id-2/",
+        car: "BMW",
+        circuit: "Street",
+        laptime: "",
+        date: "2025-06-15"
+      },
+      {
+        title: "Toyota GR86 attack — Brigif",
+        url: "https://www.instagram.com/reel/your-reel-id-3/",
+        car: "Toyota",
+        circuit: "Brigif",
+        laptime: "1:08.440",
+        date: "2025-05-20"
+      },
+      {
+        title: "Honda Civic Type R — Mandalika",
+        url: "https://www.instagram.com/reel/your-reel-id-4/",
+        car: "Honda",
+        circuit: "Mandalika",
+        laptime: "2:04.100",
+        date: "2025-04-10"
+      },
+      {
+        title: "Nissan GTR R35 highway run",
+        url: "https://www.instagram.com/reel/your-reel-id-5/",
+        car: "Nissan",
+        circuit: "Street",
+        laptime: "",
+        date: "2025-03-05"
+      },
+    ];
+
+    // ─────────────────────────────────────────
+    //  Laptime → seconds for sorting
+    // ─────────────────────────────────────────
+    function laptimeToSeconds(lt) {
+      if (!lt) return Infinity;
+      const parts = lt.split(':');
+      return parts.length === 2
+        ? parseInt(parts[0]) * 60 + parseFloat(parts[1])
+        : parseFloat(parts[0]);
+    }
+
+    // Find fastest laptime
+    const fastestLap = Math.min(...videos.map(v => laptimeToSeconds(v.laptime)));
+
+    let sortKey = '';
+    let sortAsc = true;
+    let filtered = [...videos];
+
+    function carBadgeClass(car) {
+      return car.toLowerCase();
+    }
+
+    function renderTable(data) {
+      const tbody = document.getElementById('video-table-body');
+      document.getElementById('video-count').textContent = videos.length;
+
+      if (data.length === 0) {
+        tbody.innerHTML = `<tr class="empty-row"><td colspan="4">No videos match your filters.</td></tr>`;
+        return;
+      }
+
+      tbody.innerHTML = data.map(v => {
+        const isFastest = v.laptime && laptimeToSeconds(v.laptime) === fastestLap;
+        return `
+          <tr>
+            <td class="td-title">
+              <a href="${v.url}" target="_blank" rel="noopener">
+                <span class="play-icon">
+                  <svg viewBox="0 0 10 10" fill="white"><polygon points="2,1 9,5 2,9"/></svg>
+                </span>
+                ${v.title}
+              </a>
+            </td>
+            <td><span class="badge ${carBadgeClass(v.car)}">${v.car}</span></td>
+            <td class="td-circuit"><span class="badge">${v.circuit}</span></td>
+            <td>
+              ${v.laptime
+                ? `<span class="laptime${isFastest ? ' fastest' : ''}">${v.laptime}${isFastest ? ' 🏆' : ''}</span>`
+                : `<span style="color:#bbb;font-size:12px;">—</span>`
+              }
+            </td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    function applyFilters() {
+      const car = document.getElementById('filter-car').value;
+      const circuit = document.getElementById('filter-circuit').value;
+      const search = document.getElementById('search').value.toLowerCase();
+
+      filtered = videos.filter(v =>
+        (!car || v.car === car) &&
+        (!circuit || v.circuit === circuit) &&
+        (!search || v.title.toLowerCase().includes(search) || v.car.toLowerCase().includes(search))
+      );
+
+      if (sortKey) applySortTo(filtered);
+      else renderTable(filtered);
+    }
+
+    function applySortTo(data) {
+      data.sort((a, b) => {
+        let va, vb;
+        if (sortKey === 'laptime') {
+          va = laptimeToSeconds(a.laptime);
+          vb = laptimeToSeconds(b.laptime);
+        } else {
+          va = (a[sortKey] || '').toLowerCase();
+          vb = (b[sortKey] || '').toLowerCase();
+        }
+        if (va < vb) return sortAsc ? -1 : 1;
+        if (va > vb) return sortAsc ? 1 : -1;
+        return 0;
+      });
+      renderTable(data);
+    }
+
+    function sortTable(key) {
+      // Update arrow UI
+      ['title','car','circuit','laptime'].forEach(k => {
+        const el = document.getElementById('arrow-' + k);
+        if (el) { el.textContent = '↕'; }
+        const th = el?.closest('th');
+        if (th) th.classList.remove('sorted');
+      });
+
+      if (sortKey === key) {
+        sortAsc = !sortAsc;
+      } else {
+        sortKey = key;
+        sortAsc = key === 'laptime'; // ascending for laptime (fastest first)
+      }
+
+      const arrow = document.getElementById('arrow-' + key);
+      if (arrow) {
+        arrow.textContent = sortAsc ? '↑' : '↓';
+        arrow.closest('th').classList.add('sorted');
+      }
+
+      applySortTo([...filtered]);
+    }
+
+    // Init
+    renderTable(videos);
+  </script>
+</body>
+</html>
