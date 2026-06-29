@@ -199,10 +199,11 @@
       background: var(--white);
       border: 1.5px solid var(--light);
       border-radius: var(--radius);
-      overflow: hidden;
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
     }
 
-    table { width: 100%; border-collapse: collapse; font-size: 13px; }
+    table { width: 100%; min-width: 580px; border-collapse: collapse; font-size: 13px; }
 
     thead {
       background: var(--off-white);
@@ -317,7 +318,6 @@
 
     /* ── MOBILE ── */
     @media (max-width: 500px) {
-      /*.td-circuit, .th-circuit, .td-date, .th-date { display: none; }*/
       .search-input { width: 120px; }
     }
   </style>
@@ -362,6 +362,12 @@
 
   <div class="filters">
     <div class="filter-group">
+      <select class="filter-select" id="filter-driver" onchange="applyFilters()">
+        <option value="">All Drivers</option>
+        <option value="Silas Bonar">Silas Bonar</option>
+      </select>
+    </div>
+    <div class="filter-group">
       <select class="filter-select" id="filter-car" onchange="applyFilters()">
         <option value="">All Cars</option>
         <option value="BMW">BMW</option>
@@ -393,6 +399,7 @@
           <th onclick="sortTable('car')">Car <span class="sort-arrow" id="arrow-car">↕</span></th>
           <th class="th-circuit" onclick="sortTable('circuit')">Circuit <span class="sort-arrow" id="arrow-circuit">↕</span></th>
           <th onclick="sortTable('laptime')">Laptime <span class="sort-arrow" id="arrow-laptime">↕</span></th>
+          <th onclick="sortTable('driver')">Driver <span class="sort-arrow" id="arrow-driver">↕</span></th>
           <th class="th-date" onclick="sortTable('date')">Date <span class="sort-arrow" id="arrow-date">↕</span></th>
         </tr>
       </thead>
@@ -405,56 +412,13 @@
   </div>
 
   <script>
-    const videos = [
-      {
-        title: "E90 M3",
-        url: "https://www.instagram.com/reel/C2kLmWaJZyZ/",
-        car: "BMW",
-        circuit: "Mandalika",
-        laptime: "1:52.51",
-        date: "26/11/2023"
-      },
-      {
-        title: "BMW M2 G87 — Wish Motorsport",
-        url: "https://www.instagram.com/reel/your-reel-id-2/",
-        car: "BMW",
-        circuit: "Mandalika",
-        laptime: "1:42.55",
-        date: "2025-05-01"
-      },
-      {
-        title: "Ferrari 458 Speciale — Mandalika",
-        url: "https://www.instagram.com/reel/your-reel-id-3/",
-        car: "Ferrari",
-        circuit: "Mandalika",
-        laptime: "1:44.720",
-        date: "2025-04-10"
-      },
-      {
-        title: "BMW M4 G82 — Petrol Head Garage",
-        url: "https://www.instagram.com/reel/your-reel-id-4/",
-        car: "BMW",
-        circuit: "Mandalika",
-        laptime: "1:44.05",
-        date: "2025-03-20"
-      },
-      {
-        title: "Porsche 911 GT3 Cup (992) — Mandalika",
-        url: "https://www.instagram.com/reel/your-reel-id-5/",
-        car: "Porsche",
-        circuit: "Mandalika",
-        laptime: "",
-        date: "2025-03-05"
-      },
-      {
-        title: "BMW G87 M2 FT ZYS — Mandalika",
-        url: "https://www.instagram.com/reel/your-reel-id-6/",
-        car: "BMW",
-        circuit: "Mandalika",
-        laptime: "1:44.41",
-        date: "2025-02-15"
-      },
-    ];
+    const CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTKGCdsF7OYhpOsWuzcpU8p7Vjzr6f7Z_qeDK2GrR2epGwCmMjMD2gfDB24lM3An21MHCKNZcRxIIyE/pub?gid=0&single=true&output=csv';
+
+    let allVideos = [];
+    let filtered = [];
+    let sortKey = '';
+    let sortAsc = true;
+    let fastestLap = Infinity;
 
     function laptimeToSeconds(lt) {
       if (!lt) return Infinity;
@@ -464,47 +428,83 @@
         : parseFloat(parts[0]);
     }
 
-    const fastestLap = Math.min(...videos.map(v => laptimeToSeconds(v.laptime)));
-
-    let sortKey = '';
-    let sortAsc = true;
-    let filtered = [...videos];
-
     function carBadgeClass(car) {
-      return car.toLowerCase();
+      return (car || '').toLowerCase();
+    }
+
+    function parseCSV(text) {
+      const lines = text.trim().split('\n');
+      const headers = lines[0].split(',').map(h => h.trim().toLowerCase().replace(/\r/g, ''));
+      return lines.slice(1).map(line => {
+        // Handle commas inside quoted fields
+        const cols = [];
+        let cur = '', inQuote = false;
+        for (let i = 0; i < line.length; i++) {
+          const ch = line[i];
+          if (ch === '"') { inQuote = !inQuote; }
+          else if (ch === ',' && !inQuote) { cols.push(cur.trim()); cur = ''; }
+          else { cur += ch; }
+        }
+        cols.push(cur.trim().replace(/\r/g, ''));
+        const obj = {};
+        headers.forEach((h, i) => { obj[h] = cols[i] || ''; });
+        return obj;
+      }).filter(v => v.title);
+    }
+
+    function populateFilters(videos) {
+      const drivers = [...new Set(videos.map(v => v.driver).filter(Boolean))].sort();
+      const cars = [...new Set(videos.map(v => v.car).filter(Boolean))].sort();
+      const circuits = [...new Set(videos.map(v => v.circuit).filter(Boolean))].sort();
+
+      const driverSel = document.getElementById('filter-driver');
+      const carSel = document.getElementById('filter-car');
+      const circuitSel = document.getElementById('filter-circuit');
+
+      driverSel.innerHTML = '<option value="">All Drivers</option>' +
+        drivers.map(d => '<option value="' + d + '">' + d + '</option>').join('');
+      carSel.innerHTML = '<option value="">All Cars</option>' +
+        cars.map(c => '<option value="' + c + '">' + c + '</option>').join('');
+      circuitSel.innerHTML = '<option value="">All Circuits</option>' +
+        circuits.map(c => '<option value="' + c + '">' + c + '</option>').join('');
     }
 
     function renderTable(data) {
       const tbody = document.getElementById('video-table-body');
       if (data.length === 0) {
-        tbody.innerHTML = '<tr class="empty-row"><td colspan="5">No videos match your filters.</td></tr>';
+        tbody.innerHTML = '<tr class="empty-row"><td colspan="6">No videos match your filters.</td></tr>';
         return;
       }
       tbody.innerHTML = data.map(v => {
         const isFastest = v.laptime && laptimeToSeconds(v.laptime) === fastestLap;
         return '<tr>' +
-          '<td class="td-title"><a href="' + v.url + '" target="_blank" rel="noopener">' +
+          '<td class="td-title"><a href="' + (v.url || '#') + '" target="_blank" rel="noopener">' +
           '<span class="play-icon"><svg viewBox="0 0 10 10" fill="white"><polygon points="2,1 9,5 2,9"/></svg></span>' +
           v.title + '</a></td>' +
-          '<td><span class="badge ' + carBadgeClass(v.car) + '">' + v.car + '</span></td>' +
-          '<td class="td-circuit"><span class="badge">' + v.circuit + '</span></td>' +
+          '<td><span class="badge ' + carBadgeClass(v.car) + '">' + (v.car || '—') + '</span></td>' +
+          '<td class="td-circuit"><span class="badge">' + (v.circuit || '—') + '</span></td>' +
           '<td>' + (v.laptime
             ? '<span class="laptime' + (isFastest ? ' fastest' : '') + '">' + v.laptime + (isFastest ? ' 🏆' : '') + '</span>'
             : '<span style="color:#bbb;font-size:12px;">—</span>') +
           '</td>' +
+          '<td><span style="font-size:13px;font-weight:500;">' + (v.driver || '—') + '</span></td>' +
           '<td class="td-date" style="color:var(--mid);font-size:12px;">' + (v.date || '—') + '</td>' +
           '</tr>';
       }).join('');
     }
 
     function applyFilters() {
+      const driver = document.getElementById('filter-driver').value;
       const car = document.getElementById('filter-car').value;
       const circuit = document.getElementById('filter-circuit').value;
       const search = document.getElementById('search').value.toLowerCase();
-      filtered = videos.filter(v =>
+      filtered = allVideos.filter(v =>
+        (!driver || v.driver === driver) &&
         (!car || v.car === car) &&
         (!circuit || v.circuit === circuit) &&
-        (!search || v.title.toLowerCase().includes(search) || v.car.toLowerCase().includes(search))
+        (!search || (v.title || '').toLowerCase().includes(search) ||
+          (v.car || '').toLowerCase().includes(search) ||
+          (v.driver || '').toLowerCase().includes(search))
       );
       if (sortKey) applySortTo(filtered);
       else renderTable(filtered);
@@ -528,7 +528,7 @@
     }
 
     function sortTable(key) {
-      ['title','car','circuit','laptime','date'].forEach(function(k) {
+      ['title','driver','car','circuit','laptime','date'].forEach(function(k) {
         var el = document.getElementById('arrow-' + k);
         if (el) { el.textContent = '↕'; el.closest('th').classList.remove('sorted'); }
       });
@@ -538,7 +538,24 @@
       applySortTo([...filtered]);
     }
 
-    renderTable(videos);
+    // Show loading state
+    document.getElementById('video-table-body').innerHTML =
+      '<tr class="empty-row"><td colspan="6">Loading videos…</td></tr>';
+
+    // Fetch from Google Sheets
+    fetch(CSV_URL)
+      .then(function(res) { return res.text(); })
+      .then(function(text) {
+        allVideos = parseCSV(text);
+        filtered = [...allVideos];
+        fastestLap = Math.min.apply(null, allVideos.map(v => laptimeToSeconds(v.laptime)));
+        populateFilters(allVideos);
+        renderTable(filtered);
+      })
+      .catch(function() {
+        document.getElementById('video-table-body').innerHTML =
+          '<tr class="empty-row"><td colspan="6">Could not load videos. Please try again later.</td></tr>';
+      });
   </script>
 </body>
 </html>
