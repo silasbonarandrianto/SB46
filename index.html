@@ -379,36 +379,103 @@
     </div>
   </div>
 
+  <!-- SUBMIT MODAL -->
+  <div id="form-modal" style="
+    display:none;
+    position:fixed;
+    top:0;left:0;right:0;bottom:0;
+    background:rgba(0,0,0,0.5);
+    z-index:1000;
+    align-items:center;
+    justify-content:center;
+    padding:16px;
+  " onclick="if(event.target===this)closeModal()">
+    <div style="
+      background:#fff;
+      border-radius:12px;
+      width:100%;
+      max-width:600px;
+      max-height:90vh;
+      overflow:hidden;
+      display:flex;
+      flex-direction:column;
+      box-shadow:0 8px 40px rgba(0,0,0,0.2);
+    ">
+      <div style="
+        display:flex;
+        align-items:center;
+        justify-content:space-between;
+        padding:14px 18px;
+        border-bottom:1.5px solid #e8e8e4;
+        flex-shrink:0;
+      ">
+        <span style="font-family:Arial,sans-serif;font-weight:700;font-size:14px;color:#111;">Submit Your Laptime</span>
+        <button onclick="closeModal()" style="
+          background:none;border:none;cursor:pointer;
+          font-size:20px;color:#666;line-height:1;padding:0 4px;
+        ">✕</button>
+      </div>
+      <div style="overflow-y:auto;flex:1;">
+        <iframe
+          src="https://docs.google.com/forms/d/e/1FAIpQLSfoqxMoWwRbUK6cL7Ub1XvJeqCP-a9LX0U40memTyzzH5jZ1Q/viewform?embedded=true"
+          width="100%"
+          height="900"
+          frameborder="0"
+          marginheight="0"
+          marginwidth="0"
+          style="display:block;"
+        >Loading…</iframe>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function openModal() {
+      var m = document.getElementById('form-modal');
+      m.style.display = 'flex';
+      document.body.style.overflow = 'hidden';
+    }
+    function closeModal() {
+      var m = document.getElementById('form-modal');
+      m.style.display = 'none';
+      document.body.style.overflow = '';
+    }
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape') closeModal();
+    });
+  </script>
+
   <!-- SUBMIT BUTTON -->
   <div style="max-width:640px;margin:0 auto 32px;text-align:center;">
     <p style="font-size:13px;color:#666;margin-bottom:12px;line-height:1.6;">
       Help grow the laptime knowledge database in Indonesia.<br>
       Only entries <strong>with a video link</strong> will be listed.
     </p>
-    <a href="https://forms.gle/yAoDsawHuC1j9b4v8" target="_blank" rel="noopener" style="
+    <button onclick="openModal()" style="
       display:inline-flex;
       align-items:center;
-      gap:8px;
+      gap:6px;
       background:#c0392b;
       color:#fff;
       font-family:Arial,sans-serif;
       font-size:12px;
       font-weight:600;
-      text-decoration:none;
+      border:none;
+      cursor:pointer;
       padding:7px 16px;
       border-radius:99px;
       letter-spacing:0.03em;
       box-shadow:0 2px 8px rgba(192,57,43,0.2);
-      transition:background 0.15s,box-shadow 0.15s;
+      transition:background 0.15s;
     "
-    onmouseover="this.style.background='#a93226';this.style.boxShadow='0 4px 16px rgba(192,57,43,0.35)'"
-    onmouseout="this.style.background='#c0392b';this.style.boxShadow='0 2px 12px rgba(192,57,43,0.25)'"
+    onmouseover="this.style.background='#a93226'"
+    onmouseout="this.style.background='#c0392b'"
     >
       <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
         <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/>
       </svg>
       Submit Your Laptime
-    </a>
+    </button>
   </div>
 
   <!-- TABLE SECTION -->
